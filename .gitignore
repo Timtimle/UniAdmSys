@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Secrets / local environment
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Generated outputs
+outputs/*
+!outputs/.gitkeep
+
+# Local model cache / weights
+models/*
+!models/.gitkeep
+
+# Raw AIC data: keep local, never commit.
+data/keyframes/
+data/Keyframes/
+data/videos/
+data/clip_features/
+data/objects/
+data/mapping/
+data/metadata/
+
+# Index folders are intentionally NOT ignored here because .gitattributes
+# can track them with Git LFS when the team chooses to share them.
+#   data/index_siglip2/
+#   data/index_objects/
+#   data/index/
+
+# Research/runtime artifacts
+*.bak
+*.tmp
+*.log
+*.csv~
+
+# AIC2026 large/runtime data
+data/
+models/
+outputs/
+cache/
+checkpoints/
+
+*.npy
+*.npz
+*.pt
+*.pth
+*.onnx
+*.faiss
+*.index
+*.db
+*.sqlite
+*.mp4
+*.mkv
+*.avi
+*.zip
+*.7z
+
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Competition answer exports
+answer/*.txt
+!answer/.gitkeep

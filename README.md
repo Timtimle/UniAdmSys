@@ -20,32 +20,22 @@ to be added
 
 ```mermaid
 flowchart LR
-    USER["Applicant / Administrator"]
+    USER["Applicant / Admin"]
     FE["Frontend"]
-    BE["Backend API"]
-    DB[("Application Database")]
-
-    subgraph AIS["AI Service"]
-        AGENT["AI Agent"]
-        RET["Knowledge Retrieval"]
-        LLM["Large Language Model"]
-    end
+    BE["Backend"]
+    DB[("Database")]
+    AI["AI Agent"]
 
     USER --> FE
-    FE -->|"REST API"| BE
+    FE --> BE
 
-    BE -->|"Read / Write"| DB
-    DB -->|"Data"| BE
+    BE --> DB
+    BE --> AI
 
-    BE -->|"AI Query"| AGENT
-    AGENT --> RET
-    RET -->|"Relevant Context"| AGENT
+    DB --> BE
+    AI --> BE
 
-    AGENT -->|"Context + Prompt"| LLM
-    LLM -->|"Generated Response"| AGENT
-
-    AGENT -->|"AI Response"| BE
-    BE -->|"API Response"| FE
+    BE --> FE
     FE --> USER
 ```
 
@@ -55,28 +45,45 @@ flowchart LR
 flowchart LR
     Q["User Query"]
 
-    subgraph ORCH["Agent Orchestration"]
-        P["Query Processing"]
-        R["Knowledge Retrieval"]
-        C["Context Builder"]
-        G["Response Generator"]
-        V["Response Validation"]
+    subgraph INPUT["Input Processing"]
+        P["Query Preprocessing"]
+        I["Intent Analysis"]
     end
 
-    KB[("Admission Knowledge Base")]
-    LLM["Large Language Model"]
+    subgraph RETRIEVAL["Knowledge Retrieval"]
+        R["Retriever"]
+        KB[("Admission Knowledge Base")]
+        C["Context Builder"]
+    end
+
+    subgraph GENERATION["Generation"]
+        PR["Prompt Construction"]
+        LLM["Large Language Model"]
+    end
+
+    subgraph POST["Post-processing"]
+        V["Response Validation"]
+        F["Response Formatting"]
+    end
+
     OUT["Final Response"]
+    FALLBACK["Fallback Handling"]
 
     Q --> P
-    P --> R
+    P --> I
+
+    I --> R
     R -->|"Retrieve"| KB
     KB -->|"Relevant Data"| C
-    C --> G
 
-    G -->|"Prompt + Context"| LLM
-    LLM -->|"Completion"| G
+    C --> PR
+    PR -->|"Prompt + Context"| LLM
 
-    G --> V
-    V --> OUT
+    LLM --> V
+    V --> F
+    F --> OUT
+
+    R -.->|"Insufficient Data"| FALLBACK
+    FALLBACK --> OUT
 ```
 

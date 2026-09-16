@@ -18,72 +18,16 @@ to be added
 
 ## System Architecture
 
-```mermaid
-flowchart LR
-    USER["Applicant / Admin"]
-    FE["Frontend"]
-    BE["Backend"]
-    DB[("Database")]
-    AI["AI Agent"]
-
-    USER --> FE
-    FE --> BE
-
-    BE --> DB
-    BE --> AI
-
-    DB --> BE
-    AI --> BE
-
-    BE --> FE
-    FE --> USER
-```
+<p align="center">
+  <img src="docs/assets/architecture/sys.svg"
+       alt="System Architecture"
+       width="900">
+</p>
 
 ## AI Agent Pipeline
 
-```mermaid
-flowchart LR
-    Q["User Query"]
-
-    subgraph INPUT["Input Processing"]
-        P["Query Preprocessing"]
-        I["Intent Analysis"]
-    end
-
-    subgraph RETRIEVAL["Knowledge Retrieval"]
-        R["Retriever"]
-        KB[("Admission Knowledge Base")]
-        C["Context Builder"]
-    end
-
-    subgraph GENERATION["Generation"]
-        PR["Prompt Construction"]
-        LLM["Large Language Model"]
-    end
-
-    subgraph POST["Post-processing"]
-        V["Response Validation"]
-        F["Response Formatting"]
-    end
-
-    OUT["Final Response"]
-    FALLBACK["Fallback Handling"]
-
-    Q --> P
-    P --> I
-
-    I --> R
-    R -->|"Retrieve"| KB
-    KB -->|"Relevant Data"| C
-
-    C --> PR
-    PR -->|"Prompt + Context"| LLM
-
-    LLM --> V
-    V --> F
-    F --> OUT
-
-    R -.->|"Insufficient Data"| FALLBACK
-    FALLBACK --> OUT
-```
-
+<p align="center">
+  <img src="docs/assets/architecture/agent_pl.svg"
+       alt="AI Agent Pipeline"
+       width="1100">
+</p>

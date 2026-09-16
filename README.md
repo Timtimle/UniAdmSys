@@ -43,3 +43,34 @@ flowchart LR
 
     BE --> FE
     FE --> U
+
+```
+
+#test
+
+```md
+## AI Agent Pipeline
+
+```mermaid
+flowchart TD
+    Q[User Question]
+    BE[Backend Request]
+    PRE[Preprocess Input]
+    INTENT[Intent Detection]
+    RETRIEVE[Retrieve Admission Info]
+    CONTEXT[Build Context]
+    LLM[LLM / AI Model]
+    VALIDATE[Validate Response]
+    RES[Return Answer]
+
+    Q --> BE
+    BE --> PRE
+    PRE --> INTENT
+    INTENT --> RETRIEVE
+    RETRIEVE --> CONTEXT
+    CONTEXT --> LLM
+    LLM --> VALIDATE
+    VALIDATE --> RES
+    RES --> BE
+
+

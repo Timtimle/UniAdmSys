@@ -16,58 +16,37 @@ to be added
 
 to be added
 
-## System Pipeline
+## System Architecture
 
 ```mermaid
 flowchart LR
-    subgraph CLIENT["Client Layer"]
-        U["User / Applicant"]
-        FE["Frontend"]
-        U --> FE
+    USER["Applicant / Administrator"]
+    FE["Frontend"]
+    BE["Backend API"]
+    DB[("Application Database")]
+
+    subgraph AIS["AI Service"]
+        AGENT["AI Agent"]
+        RET["Knowledge Retrieval"]
+        LLM["Large Language Model"]
     end
 
-    subgraph SERVER["Application Layer"]
-        BE["Backend API"]
-    end
+    USER --> FE
+    FE -->|"REST API"| BE
 
-    subgraph DATA["Data Layer"]
-        DB[("System Database")]
-    end
+    BE -->|"Read / Write"| DB
+    DB -->|"Data"| BE
 
-    subgraph AI_LAYER["AI Layer"]
-        AI["AI Agent"]
-        KB[("Admission Knowledge Base")]
-        LLM["LLM / AI Model"]
+    BE -->|"AI Query"| AGENT
+    AGENT --> RET
+    RET -->|"Relevant Context"| AGENT
 
-        AI -->|"Retrieve Data"| KB
-        KB -->|"Relevant Context"| AI
+    AGENT -->|"Context + Prompt"| LLM
+    LLM -->|"Generated Response"| AGENT
 
-        AI -->|"Prompt + Context"| LLM
-        LLM -->|"Generated Response"| AI
-    end
-
-    FE -->|"HTTP / REST API"| BE
-
-    BE -->|"Query / Update"| DB
-    DB -->|"Result"| BE
-
-    BE -->|"AI Request"| AI
-    AI -->|"AI Response"| BE
-
+    AGENT -->|"AI Response"| BE
     BE -->|"API Response"| FE
-
-    classDef user fill:#f6f8fa,stroke:#57606a,stroke-width:1.5px;
-    classDef frontend fill:#ddf4ff,stroke:#0969da,stroke-width:2px;
-    classDef backend fill:#fff8c5,stroke:#bf8700,stroke-width:2px;
-    classDef database fill:#ffebe9,stroke:#cf222e,stroke-width:2px;
-    classDef ai fill:#fbefff,stroke:#8250df,stroke-width:2px;
-
-    class U user;
-    class FE frontend;
-    class BE backend;
-    class DB database;
-    class AI,KB,LLM ai;
-```
+    FE --> USER
 
 ## AI Agent Pipeline
 

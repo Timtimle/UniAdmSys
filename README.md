@@ -24,7 +24,7 @@ to be added
        width="900">
 </p>
 
-## AI Agent Pipeline
+## Agent Pipeline
 
 <p align="center">
   <img src="docs/assets/architecture/agent_pl.svg"

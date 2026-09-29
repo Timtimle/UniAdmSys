@@ -5,12 +5,6 @@ from pathlib import Path
 
 
 class LocalDocumentRetriever:
-    """
-    Tiny dependency-free retriever for the MVP.
-    It chunks .md/.txt files and ranks chunks using token overlap.
-
-    Replace this later with embeddings + a vector database if the project needs it.
-    """
 
     def __init__(self, docs_dir: str = "data/admission_docs"):
         self.docs_dir = Path(docs_dir)

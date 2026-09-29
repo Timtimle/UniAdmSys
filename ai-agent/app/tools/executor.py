@@ -131,7 +131,6 @@ class ToolExecutor:
                 "documents_complete": documents_ok,
                 "meets_configured_minimums": score_ok and documents_ok,
                 "official_admission_decision": False,
-                "note": "Demo rule check only; not an admission offer.",
             },
         }
 

@@ -5,12 +5,6 @@ from app.config import Settings
 
 
 class BackendClient:
-    """
-    Contract expected from the UniAdmSys backend.
-
-    Adjust only this class when the real backend routes differ.
-    The Agent and tool schemas can stay unchanged.
-    """
 
     def __init__(self, settings: Settings):
         self.settings = settings

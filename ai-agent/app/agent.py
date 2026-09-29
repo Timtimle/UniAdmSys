@@ -27,7 +27,6 @@ class AdmissionsAgent:
                 "OPENAI_API_KEY is missing. Copy .env.example to .env and add your API key."
             )
 
-        # The authenticated identity is supplied by UniAdmSys, not chosen by the model.
         runtime_context = ToolContext(user_id=user_id, role=role)
 
         instructions = (

@@ -1,24 +1,17 @@
-# UniAdmSys Agent
+# UniAdmSys AI Agent
 
-AI Agent service for UniAdmSys using FastAPI + OpenAI API.
-
-## Features
-
-- LLM integration
-- Tool/function calling
-- Mock backend for development
-- Backend API integration
-- Basic admissions document retrieval
+FastAPI AI Agent for UniAdmSys using OpenAI API, tool calling and demo RAG data.
 
 ## Run
 
-```bash
+```powershell
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
+copy .env.example .env
 ```
 
-Copy `.env.example` to `.env` and set:
+Set your key in `.env`:
 
 ```env
 OPENAI_API_KEY=your_key
@@ -28,7 +21,7 @@ USE_MOCK_BACKEND=true
 
 Start:
 
-```bash
+```powershell
 python -m uvicorn app.main:app --reload --port 8001
 ```
 
@@ -38,7 +31,7 @@ Swagger:
 http://127.0.0.1:8001/docs
 ```
 
-## Main API
+## Chat API
 
 ```http
 POST /api/agent/chat
@@ -48,56 +41,52 @@ Example:
 
 ```json
 {
-  "message": "Hồ sơ của tôi còn thiếu gì?",
+  "message": "Hồ sơ tuyển sinh cần giấy tờ gì?",
   "user_id": 1,
   "role": "applicant"
 }
 ```
 
-## Tools
+## Demo RAG
 
-- `search_majors`
-- `get_major_details`
-- `get_application_status`
-- `get_admission_rules`
-- `check_eligibility`
-- `search_admission_docs`
+Demo documents are in:
 
-## Backend Integration
+```text
+data/admission_docs/
+```
 
-During development:
+Included:
+- `admission_rules_demo.md`
+- `tuition_demo.md`
+- `faq_demo.md`
+
+Try:
+- `Hồ sơ tuyển sinh cần giấy tờ gì?`
+- `Đủ điểm tối thiểu có chắc chắn trúng tuyển không?`
+- `Học phí Software Engineering bao nhiêu?`
+- `IELTS được quy đổi bao nhiêu điểm?`
+
+For document questions, `tools_used` should normally include:
+
+```text
+search_admission_docs
+```
+
+All current document data is DEMO only.
+
+## Real Backend
+
+Keep this while teammates are still developing:
 
 ```env
 USE_MOCK_BACKEND=true
 ```
 
-When the UniAdmSys backend is ready:
+Later:
 
 ```env
 USE_MOCK_BACKEND=false
 BACKEND_BASE_URL=http://localhost:5000
 ```
 
-Backend routes are configured in:
-
-```text
-app/backend_client.py
-```
-
-## Structure
-
-```text
-ai-agent/
-├── app/
-│   ├── main.py
-│   ├── agent.py
-│   ├── backend_client.py
-│   ├── config.py
-│   ├── prompts.py
-│   ├── tools/
-│   └── rag/
-├── data/
-├── tests/
-├── .env.example
-└── requirements.txt
-```
+Backend routes are mapped in `app/backend_client.py`.

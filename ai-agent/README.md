@@ -1,4 +1,4 @@
-# UniAdmSys AI Agent
+# UniAdmSys Agent
 
 AI Agent service for UniAdmSys using FastAPI + OpenAI API.
 

@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý & Duyệt Hồ Sơ - Cán Bộ Tuyển Sinh</title>
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-navbar">
+        <div class="nav-brand">HỆ THỐNG QUẢN TRỊ TUYỂN SINH</div>
+        <div class="nav-user">
+            <span>Cán bộ: <strong>Nguyễn Văn Nghĩa</strong></span>
+            <a href="login.html" class="btn-logout">Đăng xuất</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <ul>
+                <li class="active"><a href="index.html">Duyệt hồ sơ</a></li>
+                <li><a href="dashboard.html">Thống kê & Cấu hình</a></li>
+            </ul>
+        </aside>
+
+        <main class="admin-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>Danh sách hồ sơ xét tuyển</h2>
+                <!-- THÊM HIỂN THỊ TỔNG SỐ HỒ SƠ THỰC TẾ -->
+                <div style="background-color: #1a4d8c; color: white; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    📋 Tổng số hồ sơ: <span id="totalProfilesCount" style="color: #ffeb3b; font-size: 16px;">0</span>
+                </div>
+            </div>
+
+            <!-- BỘ LỌC HỒ SƠ -->
+            <div class="filter-card">
+                <div class="filter-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo Mã HS, Họ tên, CCCD...">
+
+                    <select id="filterMajor" class="form-control">
+                        <option value="">-- Tất cả ngành --</option>
+                        <option value="CNTT">Công nghệ thông tin (CNTT)</option>
+                        <option value="KTPM">Kỹ thuật phần mềm (KTPM)</option>
+                        <option value="QTKD">Quản trị kinh doanh (QTKD)</option>
+                        <option value="MKT">Marketing (MKT)</option>
+                        <option value="KHMT">Khoa học máy tính (KHMT)</option>
+                    </select>
+
+                    <select id="filterStatus" class="form-control">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="Chờ duyệt">Chờ duyệt</option>
+                        <option value="Đã duyệt">Đã duyệt</option>
+                        <option value="Từ chối">Từ chối</option>
+                    </select>
+
+                    <input type="number" id="filterMinScore" class="form-control" placeholder="Điểm tối thiểu" step="0.1">
+
+                    <button class="btn-primary" onclick="applyFilter()">Lọc dữ liệu</button>
+                    <button class="btn-secondary" onclick="resetFilter()" style="background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Đặt lại</button>
+                </div>
+            </div>
+
+            <!-- BẢNG DỮ LIỆU HỒ SƠ -->
+            <div class="table-card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã HS</th>
+                            <th>Họ và tên</th>
+                            <th>Ngành đăng ký (Nhấp để lọc)</th>
+                            <th>Tổ hợp</th>
+                            <th>Tổng điểm</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="profileTableBody">
+                        <!-- Render dữ liệu bằng JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL XEM CHI TIẾT & DUYỆT HỒ SƠ -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3>Chi tiết hồ sơ đăng ký</h3>
+            <hr><br>
+
+            <div class="modal-body" id="modalDetailBody">
+                <!-- Nội dung chi tiết hồ sơ -->
+            </div>
+
+            <div class="modal-action-area">
+                <div class="form-group" style="margin-top: 15px;">
+                    <label for="rejectReason" style="font-weight: bold; margin-bottom: 5px; display: block;">Lý do (Bắt buộc nếu từ chối):</label>
+                    <textarea id="rejectReason" class="form-control" rows="2" placeholder="Nhập lý do từ chối..."></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn-danger" id="btnReject">Từ chối hồ sơ</button>
+                    <button class="btn-success" id="btnApprove">Duyệt hồ sơ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/manage-profiles.js"></script>
+</body>
+</html>

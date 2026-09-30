@@ -1,0 +1,255 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nộp Hồ Sơ Xét Tuyển</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .form-container {
+            max-width: 750px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 8px;
+                color: #1a365d;
+            }
+
+            .form-group input, .form-group select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+
+        .preview-img {
+            max-width: 150px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+
+        .btn-submit {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+            .btn-submit:hover {
+                background: #0b5ed7;
+            }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Tuyển Sinh Đại Học 2026</h1>
+        <nav id="navMenu">
+            <a href="index.html">Trang Chủ</a>
+            <a href="application.html">Nộp Hồ Sơ</a>
+            <a href="profile.html">Hồ Sơ Của Tôi</a>
+            <a href="login.html" id="authBtn">Đăng Nhập</a>
+        </nav>
+    </header>
+
+    <div class="form-container">
+        <h2 style="color: #1a365d; text-align: center; margin-bottom: 20px;">Nộp / Cập Nhật Hồ Sơ Xét Tuyển</h2>
+        <form id="applicationForm">
+            <div class="form-group">
+                <label for="fullName">Họ và tên thí sinh:</label>
+                <input type="text" id="fullName" placeholder="Nguyễn Văn A" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cccd">Số CCCD / CMND:</label>
+                <input type="text" id="cccd" placeholder="0123456789xx" required>
+            </div>
+
+            <div class="form-group">
+                <label for="major">Ngành đăng ký xét tuyển:</label>
+                <select id="major" required>
+                    <option value="">-- Chọn ngành --</option>
+                    <option value="Khoa học máy tính">7480101 - Khoa học máy tính</option>
+                    <option value="Mạng máy tính và truyền thông">7480102 - Mạng máy tính và truyền thông</option>
+                    <option value="Kỹ thuật phần mềm">7480103 - Kỹ thuật phần mềm</option>
+                    <option value="Công nghệ thông tin">7480201 - Công nghệ thông tin</option>
+                    <option value="Quản trị kinh doanh">7340101 - Quản trị kinh doanh</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="scoreInput">Tổng điểm xét tuyển THPT (Điểm tự kê khai):</label>
+                <input type="number" id="scoreInput" placeholder="Ví dụ: 25.5" step="0.25" min="0" max="30" required>
+            </div>
+
+            <!-- Upload Ảnh Chân Dung 3x4 -->
+            <div class="form-group">
+                <label for="avatarInput">Ảnh chân dung (3x4):</label>
+                <input type="file" id="avatarInput" accept="image/*">
+                <img id="avatarPreview" class="preview-img" alt="Xem trước ảnh 3x4">
+            </div>
+
+            <!-- Upload Ảnh Học Bạ / Minh Chứng -->
+            <div class="form-group">
+                <label for="docInput">Ảnh học bạ / Minh chứng kết quả học tập:</label>
+                <input type="file" id="docInput" accept="image/*">
+                <img id="docPreview" class="preview-img" alt="Xem trước học bạ">
+            </div>
+
+            <button type="submit" class="btn-submit">💾 Lưu & Gửi Hồ Sơ Sang Phía Xét Tuyển</button>
+        </form>
+    </div>
+
+    <script src="js/mockService.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Kiểm tra trạng thái Đăng nhập trên Menu
+            var authBtn = document.getElementById("authBtn");
+            var isLoggedIn = localStorage.getItem("isLoggedIn") || localStorage.getItem("currentUser");
+            if (isLoggedIn) {
+                authBtn.innerText = "Đăng Xuất";
+                authBtn.href = "javascript:void(0)";
+                authBtn.onclick = function () {
+                    if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+                        localStorage.removeItem("isLoggedIn");
+                        localStorage.removeItem("currentUser");
+                        window.location.href = "login.html";
+                    }
+                };
+            }
+
+            // 2. Điền sẵn dữ liệu cũ nếu thí sinh đã nộp trước đó
+            var savedData = JSON.parse(localStorage.getItem("userApplication"));
+            if (savedData) {
+                document.getElementById("fullName").value = savedData.fullName || "";
+                document.getElementById("cccd").value = savedData.cccd || "";
+                document.getElementById("major").value = savedData.major || "";
+                if (savedData.score) document.getElementById("scoreInput").value = savedData.score;
+
+                if (savedData.avatar) {
+                    var aPrev = document.getElementById("avatarPreview");
+                    aPrev.src = savedData.avatar;
+                    aPrev.style.display = "block";
+                }
+                if (savedData.doc) {
+                    var dPrev = document.getElementById("docPreview");
+                    dPrev.src = savedData.doc;
+                    dPrev.style.display = "block";
+                }
+            }
+
+            // Preview ảnh
+            document.getElementById("avatarInput").addEventListener("change", function (e) {
+                readAndPreviewImage(e.target, "avatarPreview");
+            });
+
+            document.getElementById("docInput").addEventListener("change", function (e) {
+                readAndPreviewImage(e.target, "docPreview");
+            });
+
+            // 3. XỬ LÝ GỬI DỮ LIỆU ĐỒNG BỘ SANG BÊN ADMIN
+            document.getElementById("applicationForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                var fullName = document.getElementById("fullName").value.trim();
+                var cccd = document.getElementById("cccd").value.trim();
+                var majorText = document.getElementById("major").value;
+                var score = parseFloat(document.getElementById("scoreInput").value) || 24.0;
+                var avatarSrc = document.getElementById("avatarPreview").src || "";
+                var docSrc = document.getElementById("docPreview").src || "";
+
+                // Chuyển đổi tên ngành thành Mã ngành chuẩn
+                var majorCode = "CNTT";
+                if (majorText.includes("Khoa học máy tính")) majorCode = "KHMT";
+                else if (majorText.includes("Kỹ thuật phần mềm")) majorCode = "KTPM";
+                else if (majorText.includes("Công nghệ thông tin")) majorCode = "CNTT";
+                else if (majorText.includes("Quản trị kinh doanh")) majorCode = "QTKD";
+                else if (majorText.includes("Mạng máy tính")) majorCode = "MMT";
+
+                var appData = {
+                    fullName: fullName,
+                    cccd: cccd,
+                    major: majorText,
+                    majorCode: majorCode,
+                    score: score,
+                    submitDate: new Date().toLocaleDateString("vi-VN"),
+                    status: "Chờ duyệt",
+                    avatar: avatarSrc,
+                    doc: docSrc,
+                    reason: ""
+                };
+
+                // Lưu riêng cho phía Thí sinh xem
+                localStorage.setItem("userApplication", JSON.stringify(appData));
+
+                // CẬP NHẬT TRỰC TIẾP VÀO MẢNG DUYỆT HỒ SƠ ADMIN
+                var adminProfiles = [];
+                var storedAdmin = localStorage.getItem("adminProfiles");
+                if (storedAdmin) {
+                    try { adminProfiles = JSON.parse(storedAdmin); } catch (err) { }
+                }
+
+                var existingIndex = adminProfiles.findIndex(function (p) {
+                    return p.cccd === cccd || p.name === fullName;
+                });
+
+                var newProfileObj = {
+                    id: existingIndex !== -1 ? adminProfiles[existingIndex].id : "HS00" + (adminProfiles.length + 1),
+                    name: fullName,
+                    cccd: cccd,
+                    major: majorCode,
+                    group: "A00",
+                    score: score,
+                    status: "Chờ duyệt",
+                    docs: [docSrc ? "Giấy_tờ_Thí_sinh_nộp.png" : "Học bạ THPT.pdf"],
+                    reason: ""
+                };
+
+                if (existingIndex !== -1) {
+                    adminProfiles[existingIndex] = newProfileObj;
+                } else {
+                    adminProfiles.push(newProfileObj);
+                }
+
+                // Ghi đè vào LocalStorage và phát sự kiện đồng bộ
+                localStorage.setItem("adminProfiles", JSON.stringify(adminProfiles));
+
+                alert("Nộp hồ sơ thành công! Dữ liệu đã truyền trực tiếp sang giao diện Cán bộ tuyển sinh.");
+                window.location.href = "profile.html";
+            });
+        });
+
+        function readAndPreviewImage(input, previewId) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img = document.getElementById(previewId);
+                    img.src = e.target.result;
+                    img.style.display = "block";
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

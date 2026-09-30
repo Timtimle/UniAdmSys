@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Cán bộ - Admin</title>
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f7fa;">
+    <div class="login-box" style="background: white; padding: 40px; border-radius: 8px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 25px;">HỆ THỐNG QUẢN TRỊ TUYỂN SINH</h2>
+
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Tài khoản cán bộ</label>
+            <input type="text" id="usernameInput" class="form-control" placeholder="Nhập tài khoản (vd: Nguyễn Nhân Hiếu Nghĩa)">
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Mật khẩu</label>
+            <input type="password" id="passwordInput" class="form-control" placeholder="Nhập mật khẩu (vd: 123456)">
+        </div>
+
+        <button class="btn-primary" id="btnLogin" style="width: 100%;">Đăng nhập Cán bộ</button>
+
+        <!-- NÚT CHUYỂN SANG TRANG ĐĂNG NHẬP THÍ SINH (KHIÊM) -->
+        <div style="margin-top: 25px; text-align: center; font-size: 14px; border-top: 1px solid #eee; padding-top: 15px;">
+            <span style="color: #666;">Bạn là thí sinh đăng ký xét tuyển?</span><br>
+            <a href="../candidate-index/student/login.html" style="display: inline-block; margin-top: 10px; padding: 8px 16px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">🎓 Chuyển sang Đăng nhập Thí sinh</a>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

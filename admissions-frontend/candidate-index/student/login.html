@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng Nhập Thí Sinh</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Tuyển Sinh Đại Học 2026</h1>
+        <nav>
+            <a href="index.html">Trang Chủ</a>
+            <a href="application.html">Nộp Hồ Sơ</a>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 420px; margin-top: 50px;">
+        <h2>Đăng Nhập Thí Sinh</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email thí sinh:</label>
+                <input type="email" id="email" required placeholder="nhapemail@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu:</label>
+                <input type="password" id="password" required placeholder="******">
+            </div>
+            <button type="submit" style="width: 100%;">Đăng Nhập</button>
+        </form>
+
+        <!-- Quên mật khẩu & Đăng ký tài khoản -->
+        <div style="margin-top: 20px; text-align: center; font-size: 14px;">
+            <a href="javascript:void(0)" onclick="forgotPassword()" style="color: #2a5298; text-decoration: none;">Quên mật khẩu?</a>
+            <span style="margin: 0 10px; color: #ccc;">|</span>
+            <a href="register.html" style="color: #28a745; text-decoration: none; font-weight: bold;">Đăng ký tài khoản mới</a>
+        </div>
+
+        <!-- NÚT CHUYỂN SANG TRANG ĐĂNG NHẬP CÁN BỘ / ADMIN (NGHĨA) -->
+        <div style="margin-top: 25px; text-align: center; border-top: 1px solid #eee; padding-top: 15px;">
+            <span style="color: #666; font-size: 14px;">Dành cho Ban Tuyển sinh / Admin:</span><br>
+            <a href="../../admin-index/login.html" style="display: inline-block; margin-top: 10px; padding: 8px 16px; background-color: #1a4d8c; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">👨‍💼 Chuyển sang Đăng nhập Cán bộ / Admin</a>
+        </div>
+    </div>
+
+    <script src="js/mockService.js"></script>
+    <script>
+        // Xử lý đăng nhập thí sinh
+        document.getElementById("loginForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            mockLogin(email, password)
+                .then(function () {
+                    localStorage.setItem("currentUser", email);
+                    alert("Đăng nhập thành công!");
+                    window.location.href = "application.html";
+                })
+                .catch(function (err) {
+                    alert(err);
+                });
+        });
+
+        // Xử lý giả lập Quên mật khẩu
+        function forgotPassword() {
+            var email = prompt("Vui lòng nhập Email bạn đã đăng ký:");
+            if (email) {
+                alert("Hệ thống đã gửi hướng dẫn đặt lại mật khẩu đến email: " + email + "\nVui lòng kiểm tra hộp thư của bạn!");
+            }
+        }
+    </script>
+</body>
+</html>

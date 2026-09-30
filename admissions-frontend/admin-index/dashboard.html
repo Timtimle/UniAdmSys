@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Thống Kê & Cấu Hình - Admin</title>
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="admin-navbar">
+        <div class="nav-brand">HỆ THỐNG QUẢN TRỊ TUYỂN SINH</div>
+        <div class="nav-user">
+            <span>Admin: <strong>Nguyễn Văn Nghĩa</strong></span>
+            <a href="login.html" class="btn-logout">Đăng xuất</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <ul>
+                <li><a href="index.html">Duyệt hồ sơ</a></li>
+                <li class="active"><a href="dashboard.html">Thống kê & Cấu hình</a></li>
+            </ul>
+        </aside>
+
+        <main class="admin-content">
+            <h2>Dashboard Báo Cáo & Thống Kê Tuyển Sinh</h2>
+
+            <div class="stats-cards-grid">
+                <div class="stat-card">
+                    <h4>Tổng hồ sơ nhận</h4>
+                    <p class="stat-number" id="totalProfiles">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Chỉ tiêu còn lại</h4>
+                    <p class="stat-number text-success" id="remainingSlots">0 / 0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Tỉ lệ hồ sơ ảo (Dự kiến)</h4>
+                    <p class="stat-number text-warning" id="virtualRate">0%</p>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Số lượng hồ sơ thực tế theo ngành</h3>
+                    <canvas id="majorChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Phân bổ trạng thái duyệt hồ sơ</h3>
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 40px;">Quản lý Danh mục Ngành & Điểm Sàn</h2>
+
+            <!-- KHU VỰC FORM CẬP NHẬT / THÊM NGÀNH -->
+            <div class="filter-card" id="configFormCard">
+                <div class="config-form-inline">
+                    <input type="text" id="newMajorCode" class="form-control" placeholder="Mã ngành (VD: CNTT)">
+                    <input type="text" id="newMajorName" class="form-control" placeholder="Tên ngành học">
+                    <input type="number" id="newMajorQuota" class="form-control" placeholder="Chỉ tiêu">
+                    <input type="number" id="newBenchmark" class="form-control" placeholder="Điểm sàn" step="0.25">
+                    <button class="btn-primary" onclick="addMajorConfig()">+ Thêm / Cập nhật</button>
+                </div>
+            </div>
+
+            <!-- BẢNG DANH MỤC NGÀNH -->
+            <div class="table-card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã ngành</th>
+                            <th>Tên ngành học</th>
+                            <th>Chỉ tiêu</th>
+                            <th>Đã duyệt</th>
+                            <th>Điểm sàn quy định</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="majorTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

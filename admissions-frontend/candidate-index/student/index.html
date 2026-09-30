@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang Chủ Tuyển Sinh</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<script src="js/mockService.js"></script>
+<body>
+    <header>
+        <h1>Tuyển Sinh Đại Học 2026</h1>
+        <nav>
+            <a href="index.html">Trang Chủ</a>
+            <a href="application.html">Nộp Hồ Sơ</a>
+            <a href="profile.html">Hồ Sơ Của Tôi</a>
+            <a href="login.html">Đăng Nhập</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Danh Sách Ngành & Tra Cứu Chỉ Tiêu / Điểm Chuẩn</h2>
+        <div class="form-group">
+            <input type="text" id="searchInput" placeholder="Nhập tên ngành hoặc mã ngành...">
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Mã Ngành</th>
+                    <th>Tên Ngành</th>
+                    <th>Chỉ Tiêu</th>
+                    <th>Điểm Chuẩn 2025</th>
+                    <th>Điểm Sàn 2026</th>
+                </tr>
+            </thead>
+            <tbody id="majorTableBody">
+                <!-- Dữ liệu sẽ được JS render vào đây -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Chat Widget AI -->
+    <button class="chat-btn" id="chatBtn" onclick="toggleChat()">💬 Hỗ trợ AI</button>
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">AI Agent Tư Vấn Tuyển Sinh</div>
+        <div class="chat-body" id="chatBody">
+            <div class="msg bot">Xin chào! Tôi có thể giúp gì cho bạn về thông tin tuyển sinh?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="Nhập câu hỏi...">
+            <button onclick="sendMsg()">Gửi</button>
+        </div>
+    </div>
+
+    <script src="js/mockData.js"></script>
+    <script src="js/chatWidget.js"></script>
+    <script>
+                function renderMajors(list) {
+                    var tbody = document.getElementById("majorTableBody");
+                    if (!tbody) return;
+                    var htmlString = "";
+
+                    for (var i = 0; i < list.length; i++) {
+                        var item = list[i];
+                        htmlString += "<tr>" +
+                            "<td>" + item.code + "</td>" +
+                            "<td><strong>" + item.name + "</strong></td>" +
+                            "<td>" + item.quota + "</td>" +
+                            "<td>" + item.benchmark2025 + "</td>" +
+                            "<td>" + item.minScore + "</td>" +
+                        "</tr>";
+                    }
+
+                    tbody.innerHTML = htmlString;
+                }
+
+                // Gọi hiển thị danh sách ban đầu
+                if (typeof mockMajors !== 'undefined') {
+                    renderMajors(mockMajors);
+                }
+
+                // Sự kiện lọc danh sách theo từ khóa tìm kiếm
+                document.getElementById("searchInput").addEventListener("input", function(e) {
+                    var keyword = e.target.value.toLowerCase();
+                    if (typeof mockMajors !== 'undefined') {
+                        var filtered = mockMajors.filter(function(m) {
+                            return m.name.toLowerCase().includes(keyword) || m.code.includes(keyword);
+                        });
+                        renderMajors(filtered);
+                    }
+                });
+    </script>
+</body>
+</html>

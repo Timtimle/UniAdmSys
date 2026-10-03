@@ -5,7 +5,7 @@ const sql = fs.readFileSync("schema_drawdb.sql", "utf8");
 fs.mkdirSync("render_out", { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1920, height: 1200 }, deviceScaleFactor: 1 });
+const page = await browser.newPage({ viewport: { width: 2200, height: 6000 }, deviceScaleFactor: 1 });
 page.on("console", m => console.log("[browser]", m.type(), m.text()));
 
 try {

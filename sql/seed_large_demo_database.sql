@@ -525,10 +525,10 @@ SELECT
     e.diem_so,
     e.thang_diem,
     e.don_vi_cap,
-    DATE '2024-01-01' + ((e.rn * 7) % 550),
+    DATE '2024-01-01' + (((e.rn * 7) % 550)::int),
     CASE
         WHEN e.nhom = 'chung_chi'
-            THEN (DATE '2024-01-01' + ((e.rn * 7) % 550)) + 730
+            THEN (DATE '2024-01-01' + (((e.rn * 7) % 550)::int)) + 730
         ELSE NULL
     END,
     CASE

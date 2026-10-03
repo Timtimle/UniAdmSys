@@ -43,8 +43,15 @@ await page.waitForTimeout(500);
 
 // New diagram is empty, so overwrite is unnecessary.
 
-await page.getByRole("button", { name: /^Import$/i }).click();
-await page.waitForTimeout(1500);
+const importBtn = page.locator(".semi-modal-footer button").last();
+await importBtn.waitFor({ state: "visible", timeout: 30000 });
+await page.waitForFunction(() => {
+  const bs = [...document.querySelectorAll(".semi-modal-footer button")];
+  const b = bs[bs.length - 1];
+  return b && !b.disabled;
+}, null, { timeout: 30000 });
+await importBtn.click({ force: true });
+await page.waitForTimeout(2500);
 await page.screenshot({ path: "render_out/06_after_import.png", fullPage: true });
 await page.waitForTimeout(2500);
 

@@ -31,3 +31,14 @@ to be added
        alt="AI Agent Pipeline"
        width="1100">
 </p>
+
+
+## Database ERD
+
+<p align="center">
+  <a href="docs/assets/database/UniAdmSys_ERD.png">
+    <img src="docs/assets/database/UniAdmSys_ERD.png" alt="Database ERD" width="1100">
+  </a>
+</p>
+
+> Click the diagram to open full size and zoom.

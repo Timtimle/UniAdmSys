@@ -27,9 +27,9 @@ const fileMenu = page.getByText("File", { exact: true }).first();
 await fileMenu.waitFor({state:"visible", timeout:30000});
 await fileMenu.click();
 await page.screenshot({ path: "render_out/04_file_menu.png", fullPage: true });
-const importItem = page.getByText("Import from SQL", { exact: true });
-await importItem.hover();
-await page.getByText("PostgreSQL", { exact: true }).last().click();
+const importItem = page.getByText("Import from SQL", { exact: true }).last();
+await importItem.waitFor({ state: "visible", timeout: 30000 });
+await importItem.click();
 await page.screenshot({ path: "render_out/05_import_modal.png", fullPage: true });
 
 await page.getByText(/Upload file/i).click();

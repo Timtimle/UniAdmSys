@@ -556,7 +556,7 @@ FROM evidence e;
 
 -- =========================================================
 -- 8) DEMO FLOOR-SCORE DATA FOR UP TO 200 SCHOOLS
--- Synthetic only, clearly marked.
+-- Synthetic single threshold value.
 -- =========================================================
 WITH schools AS (
     SELECT
@@ -566,20 +566,13 @@ WITH schools AS (
     WHERE NULLIF(trim(t.ma_tuyen_sinh), '') IS NOT NULL
     ORDER BY t.ma_tuyen_sinh
     LIMIT 200
-),
-floor_scores AS (
-    SELECT
-        ma_truong,
-        round((15 + ((rn * 7) % 6))::numeric, 2) AS diem_min
-    FROM schools
 )
 INSERT INTO public.nguong_dau_vao (
     ma_truong,
     nam,
     ma_nganh,
     ma_phuong_thuc,
-    diem_san_min,
-    diem_san_max,
+    diem_san,
     trang_thai,
     ghi_chu,
     source_url
@@ -589,14 +582,12 @@ SELECT
     2025,
     NULL,
     NULL,
-    s.diem_min,
-    s.diem_min + 2.00,
+    round((15 + ((s.rn * 7) % 6))::numeric, 2),
     'demo',
-    'Synthetic floor-score range for UI/backend testing only',
+    'Synthetic floor score for UI/backend testing only',
     'demo://bulk-floor-score'
-FROM floor_scores s
+FROM schools s
 ON CONFLICT DO NOTHING;
-
 
 COMMIT;
 

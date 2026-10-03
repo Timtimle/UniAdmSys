@@ -1,8 +1,5 @@
 name: Temporary drawDB render
 
-permissions:
-  contents: write
-
 on:
   push:
     branches: [tmp-drawdb-render-20261004]
@@ -102,43 +99,6 @@ jobs:
           cp tmp_drawdb/render.mjs drawdb/render.mjs
           cd drawdb
           node render.mjs
-
-      - name: Publish ERD to main
-        if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          git clone --branch main https://x-access-token:${GH_TOKEN}@github.com/Timtimle/UniAdmSys.git publish_repo
-          mkdir -p publish_repo/docs/assets/database
-          cp drawdb/render_out/uniadmsys_drawdb_canvas.png publish_repo/docs/assets/database/UniAdmSys_ERD.png
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("publish_repo/README.md")
-          s=p.read_text(encoding="utf-8")
-          block='''
-
-## Database ERD
-
-<p align="center">
-  <a href="docs/assets/database/UniAdmSys_ERD.png">
-    <img src="docs/assets/database/UniAdmSys_ERD.png"
-         alt="Database ERD"
-         width="1100">
-  </a>
-</p>
-
-> Click the diagram to open the full-size image and zoom.
-'''
-          if "## Database ERD" not in s:
-              s=s.rstrip()+block+"\n"
-          p.write_text(s,encoding="utf-8")
-          PY
-          cd publish_repo
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md docs/assets/database/UniAdmSys_ERD.png
-          git commit -m "docs: add database ERD"
-          git push origin main
 
       - name: Upload drawDB outputs
         if: always()

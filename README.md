@@ -34,8 +34,4 @@ to be added
 
 ## Database ERD
 
-<p align="center">
-  <a href="docs/assets/database/UniAdmSys_ERD.png">
-    <img src="docs/assets/database/UniAdmSys_ERD.png" alt="Database ERD" width="1400">
-  </a>
-</p>
+![Database ERD](docs/assets/database/UniAdmSys_ERD_readable.svg)

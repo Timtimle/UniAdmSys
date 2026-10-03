@@ -53,7 +53,7 @@ the agent needs server-side access after it verifies the signed-in user.
 
 ```env
 OPENAI_API_KEY=...
-OPENAI_MODEL=gpt-5.5
+OPENAI_MODEL=gpt-5.6 luna
 ```
 
 Use a model name available in your API project.

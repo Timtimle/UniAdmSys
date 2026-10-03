@@ -1,3 +1,1 @@
-from .retriever import LocalDocumentRetriever
-
-__all__ = ["LocalDocumentRetriever"]
+# RAG now uses Supabase public.knowledge_base through search_knowledge_base.

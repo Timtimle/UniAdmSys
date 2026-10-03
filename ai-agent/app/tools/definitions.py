@@ -1,17 +1,45 @@
 TOOL_DEFINITIONS = [
     {
         "type": "function",
-        "name": "search_majors",
-        "description": "Search available university majors/programs by name, code, or keyword.",
+        "name": "search_schools",
+        "description": "Search universities by school name, admission code, or province/city.",
         "parameters": {
             "type": "object",
             "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "Major name, major code, or keyword to search for."
-                }
+                "query": {"type": "string"},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 20},
             },
-            "required": ["query"],
+            "required": ["query", "limit"],
+            "additionalProperties": False,
+        },
+        "strict": True,
+    },
+    {
+        "type": "function",
+        "name": "get_school_overview",
+        "description": "Get 2025 tuition, quota, floor score, and school metadata for one school.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "school_code": {"type": "string"},
+            },
+            "required": ["school_code"],
+            "additionalProperties": False,
+        },
+        "strict": True,
+    },
+    {
+        "type": "function",
+        "name": "search_majors",
+        "description": "Search 2025 majors/programs by name/code, optionally inside one school.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "school_code": {"type": ["string", "null"]},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 20},
+            },
+            "required": ["query", "school_code", "limit"],
             "additionalProperties": False,
         },
         "strict": True,
@@ -19,16 +47,60 @@ TOOL_DEFINITIONS = [
     {
         "type": "function",
         "name": "get_major_details",
-        "description": "Get authoritative details and configured requirements for one major/program.",
+        "description": (
+            "Get one major's catalog data, cutoff scores, admission methods, "
+            "and subject combinations. Prefer internal ma_nganh when known."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
-                "major_code": {
-                    "type": "string",
-                    "description": "The major/program code, for example SE or CS."
-                }
+                "major_id": {"type": "string"},
             },
-            "required": ["major_code"],
+            "required": ["major_id"],
+            "additionalProperties": False,
+        },
+        "strict": True,
+    },
+    {
+        "type": "function",
+        "name": "search_cutoff_scores",
+        "description": (
+            "Search 2025 cutoff scores across schools/majors. "
+            "Use this for THPT, DGNL, HSA or TSA cutoff questions."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "score_type": {
+                    "type": "string",
+                    "enum": ["all", "thi_thpt", "dgnl"],
+                },
+                "school_code": {"type": ["string", "null"]},
+                "exam_code": {"type": ["string", "null"]},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 30},
+            },
+            "required": [
+                "query",
+                "score_type",
+                "school_code",
+                "exam_code",
+                "limit",
+            ],
+            "additionalProperties": False,
+        },
+        "strict": True,
+    },
+    {
+        "type": "function",
+        "name": "get_cutoff_scores",
+        "description": "Get 2025 cutoff-score rows for an internal major id.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "major_id": {"type": "string"},
+            },
+            "required": ["major_id"],
             "additionalProperties": False,
         },
         "strict": True,
@@ -37,8 +109,8 @@ TOOL_DEFINITIONS = [
         "type": "function",
         "name": "get_application_status",
         "description": (
-            "Get the current authenticated applicant's application status and missing documents. "
-            "Do not use this tool to inspect another applicant."
+            "Get the authenticated applicant's 2025 dossier status. "
+            "Requires a signed-in user or development candidate context."
         ),
         "parameters": {
             "type": "object",
@@ -50,57 +122,109 @@ TOOL_DEFINITIONS = [
     },
     {
         "type": "function",
-        "name": "get_admission_rules",
-        "description": "Search structured admissions rules, policies, and deadlines.",
+        "name": "get_preference_results",
+        "description": (
+            "Get the authenticated applicant's preference order and current "
+            "admission result for each preference."
+        ),
         "parameters": {
             "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "What rule, policy, requirement, or deadline to look up."
-                }
-            },
-            "required": ["query"],
+            "properties": {},
+            "required": [],
             "additionalProperties": False,
         },
         "strict": True,
     },
     {
         "type": "function",
-        "name": "check_eligibility",
-        "description": (
-            "Check whether the current authenticated applicant meets the configured minimum "
-            "eligibility rules for a major. This is not an official admission decision."
-        ),
+        "name": "get_transcript_admission",
+        "description": "Get transcript-admission calculations/rules for the authenticated applicant.",
         "parameters": {
             "type": "object",
-            "properties": {
-                "major_code": {
-                    "type": "string",
-                    "description": "The major/program code to check."
-                }
-            },
-            "required": ["major_code"],
+            "properties": {},
+            "required": [],
             "additionalProperties": False,
         },
         "strict": True,
     },
     {
         "type": "function",
-        "name": "search_admission_docs",
+        "name": "get_direct_admission_eligibility",
+        "description": "Get verified achievement matches for direct/priority admission.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False,
+        },
+        "strict": True,
+    },
+    {
+        "type": "function",
+        "name": "get_certificate_conversions",
+        "description": "Get certificate-score conversion matches such as IELTS/SAT for the applicant.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False,
+        },
+        "strict": True,
+    },
+    {
+        "type": "function",
+        "name": "search_knowledge_base",
+        "description": "Search UniAdmSys knowledge_base for admissions policies, FAQ, and guidance.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 10},
+            },
+            "required": ["query", "limit"],
+            "additionalProperties": False,
+        },
+        "strict": True,
+    },
+    {
+        "type": "function",
+        "name": "calculate_admission_score",
         "description": (
-            "Retrieve relevant passages from local admissions documents/FAQ. "
-            "Use this for document-style questions that are not covered by structured backend data."
+            "Calculate a hypothetical 30-point admission score from exactly three subjects, "
+            "region priority, target-group priority, and optional bonus/floor score. "
+            "This is a calculator, not an official admission decision."
         ),
         "parameters": {
             "type": "object",
             "properties": {
-                "query": {
+                "scores": {
+                    "type": "array",
+                    "items": {"type": "number", "minimum": 0, "maximum": 10},
+                    "minItems": 3,
+                    "maxItems": 3,
+                },
+                "region": {
                     "type": "string",
-                    "description": "Question or keywords to search in admissions documents."
-                }
+                    "enum": ["KV1", "KV2-NT", "KV2", "KV3"],
+                },
+                "priority_group": {
+                    "type": "string",
+                    "enum": ["UT1", "UT2", "NONE"],
+                },
+                "bonus_score": {"type": "number", "minimum": 0, "maximum": 3},
+                "floor_score": {
+                    "type": ["number", "null"],
+                    "minimum": 0,
+                    "maximum": 30,
+                },
             },
-            "required": ["query"],
+            "required": [
+                "scores",
+                "region",
+                "priority_group",
+                "bonus_score",
+                "floor_score",
+            ],
             "additionalProperties": False,
         },
         "strict": True,

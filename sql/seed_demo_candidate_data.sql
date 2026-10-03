@@ -1,11 +1,7 @@
--- UniAdmSys: DEMO candidate data
--- Synthetic data for local/demo use only. No real personal data is included.
--- Creates:
---   300 applicants
---   2,700 exam-score rows (9 subjects/applicant)
---   up to 1,200 admission preferences (4/applicant)
---   matching admission-result rows
--- Safe to rerun: removes only rows created by this script.
+-- UniAdmSys: DEMO staff + candidate data
+-- Synthetic data only. No real personal information or real staff accounts.
+-- Run after add_candidate_flow_and_floor_score.sql.
+-- Safe to rerun: removes only records created by this script.
 
 BEGIN;
 
@@ -36,8 +32,85 @@ WHERE ma_thi_sinh IN (
 DELETE FROM public.thi_sinh
 WHERE email LIKE 'demo_candidate_%@uniadmsys.local';
 
+DELETE FROM public.can_bo
+WHERE email LIKE 'demo_staff_%@uniadmsys.local'
+   OR email = 'demo_manager@uniadmsys.local';
+
 -- =========================================================
--- 1) 300 SYNTHETIC APPLICANTS
+-- 1) STAFF ACCOUNTS
+-- These rows are staff profiles only; login credentials belong in Supabase Auth.
+-- =========================================================
+INSERT INTO public.can_bo (
+    ten_dang_nhap,
+    ho_ten,
+    email,
+    so_dien_thoai,
+    don_vi,
+    chuc_vu,
+    vai_tro,
+    trang_thai
+)
+VALUES
+(
+    'manager',
+    'Nguyễn Minh Quản',
+    'demo_manager@uniadmsys.local',
+    '0900000001',
+    'Phòng Tuyển sinh',
+    'Trưởng bộ phận',
+    'quan_ly',
+    'hoat_dong'
+);
+
+WITH staff AS (
+    SELECT
+        g AS n,
+        (ARRAY[
+            'Nguyễn','Trần','Lê','Phạm','Hoàng','Huỳnh',
+            'Phan','Vũ','Võ','Đặng','Bùi','Đỗ'
+        ])[1 + ((g - 1) % 12)] AS ho,
+        (ARRAY[
+            'Minh','Thanh','Quốc','Gia','Ngọc','Hoài',
+            'Hữu','Phương','Quang','Tuấn','Khánh','Anh'
+        ])[1 + ((g * 3 - 1) % 12)] AS dem,
+        (ARRAY[
+            'An','Bảo','Châu','Duy','Hà','Hải','Hân','Huy',
+            'Khang','Linh','Long','Mai','Nam','Ngân','Phúc','Trang'
+        ])[1 + ((g * 5 - 1) % 16)] AS ten
+    FROM generate_series(1, 30) g
+)
+INSERT INTO public.can_bo (
+    ten_dang_nhap,
+    ho_ten,
+    email,
+    so_dien_thoai,
+    don_vi,
+    chuc_vu,
+    vai_tro,
+    trang_thai
+)
+SELECT
+    'staff' || lpad(n::text, 2, '0'),
+    ho || ' ' || dem || ' ' || ten,
+    'demo_staff_' || lpad(n::text, 2, '0') || '@uniadmsys.local',
+    '091' || lpad(n::text, 7, '0'),
+    CASE
+        WHEN n % 3 = 0 THEN 'Phòng Tuyển sinh'
+        WHEN n % 3 = 1 THEN 'Phòng Đào tạo'
+        ELSE 'Bộ phận Hồ sơ'
+    END,
+    CASE
+        WHEN n % 4 = 0 THEN 'Chuyên viên xét tuyển'
+        WHEN n % 4 = 1 THEN 'Chuyên viên hồ sơ'
+        WHEN n % 4 = 2 THEN 'Chuyên viên dữ liệu'
+        ELSE 'Cán bộ tuyển sinh'
+    END,
+    'can_bo',
+    CASE WHEN n % 15 = 0 THEN 'tam_khoa' ELSE 'hoat_dong' END
+FROM staff;
+
+-- =========================================================
+-- 2) 300 SYNTHETIC APPLICANTS
 -- =========================================================
 WITH src AS (
     SELECT
@@ -80,8 +153,7 @@ SELECT
 FROM src;
 
 -- =========================================================
--- 2) EXAM SCORES: 9 SUBJECTS / APPLICANT
--- Deterministic pseudo-random values from 4.00 to 10.00.
+-- 3) EXAM SCORES: 9 SUBJECTS / APPLICANT
 -- =========================================================
 WITH subjects(mon_thi, salt) AS (
     VALUES
@@ -125,8 +197,7 @@ ON CONFLICT (ma_thi_sinh, nam, mon_thi)
 DO UPDATE SET diem = EXCLUDED.diem;
 
 -- =========================================================
--- 3) PREFERENCES: 4 PER APPLICANT
--- Pick from 2025 majors. Uses subject-combination mapping when available.
+-- 4) PREFERENCES: 4 PER APPLICANT
 -- =========================================================
 WITH major_pool AS (
     SELECT
@@ -202,15 +273,16 @@ DO UPDATE SET
     ma_to_hop = EXCLUDED.ma_to_hop;
 
 -- =========================================================
--- 4) RESULTS
--- DEMO ONLY: outcome generated from preference order + candidate number.
+-- 5) CALCULATED SCORE ROWS
+-- No admission status is stored.
+-- The web/backend compares diem_xet_tuyen with diem_chuan dynamically.
 -- =========================================================
 WITH prefs AS (
     SELECT
         nv.ma_nv,
         nv.ma_thi_sinh,
         nv.thu_tu_nguyen_vong,
-        row_number() OVER (ORDER BY nv.ma_thi_sinh) AS rn
+        row_number() OVER (ORDER BY nv.ma_thi_sinh, nv.thu_tu_nguyen_vong) AS rn
     FROM public.nguyen_vong nv
     JOIN public.thi_sinh ts
       ON ts.ma_thi_sinh = nv.ma_thi_sinh
@@ -221,7 +293,6 @@ INSERT INTO public.ket_qua_xet_tuyen (
     ma_thi_sinh,
     ma_nv,
     diem_xet_tuyen,
-    trang_thai,
     ghi_chu
 )
 SELECT
@@ -231,17 +302,11 @@ SELECT
         15.00 + (((p.rn * 29 + p.thu_tu_nguyen_vong * 17) % 1501)::numeric / 100),
         2
     ),
-    CASE
-        WHEN p.thu_tu_nguyen_vong = 1 AND p.rn % 3 = 0 THEN 'trung_tuyen'
-        WHEN p.thu_tu_nguyen_vong = 2 AND p.rn % 5 = 0 THEN 'trung_tuyen'
-        ELSE 'khong_trung_tuyen'
-    END,
-    'Synthetic demo result'
+    'Synthetic calculated score for UI testing'
 FROM prefs p
 ON CONFLICT (ma_nv)
 DO UPDATE SET
     diem_xet_tuyen = EXCLUDED.diem_xet_tuyen,
-    trang_thai = EXCLUDED.trang_thai,
     ghi_chu = EXCLUDED.ghi_chu;
 
 COMMIT;
@@ -250,6 +315,8 @@ COMMIT;
 -- QA
 -- =========================================================
 SELECT
+    (SELECT COUNT(*) FROM public.can_bo
+      WHERE email LIKE 'demo_%@uniadmsys.local') AS demo_can_bo,
     (SELECT COUNT(*) FROM public.thi_sinh
       WHERE email LIKE 'demo_candidate_%@uniadmsys.local') AS demo_thi_sinh,
     (SELECT COUNT(*) FROM public.diem_thi d

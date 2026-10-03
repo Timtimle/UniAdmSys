@@ -8,22 +8,31 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1200 }, deviceScaleFactor: 1 });
 page.on("console", m => console.log("[browser]", m.type(), m.text()));
 
+try {
 await page.goto("http://127.0.0.1:5173/editor", { waitUntil: "networkidle", timeout: 120000 });
+await page.screenshot({ path: "render_out/01_editor.png", fullPage: true });
+fs.writeFileSync("render_out/01_body.txt", await page.locator("body").innerText());
 
 // Pick PostgreSQL for the new diagram.
 const pg = page.getByText("PostgreSQL", { exact: true }).first();
 await pg.waitFor({ state: "visible", timeout: 30000 });
 await pg.click();
-await page.getByRole("button", { name: "Confirm" }).click();
+await page.screenshot({ path: "render_out/02_db_selected.png", fullPage: true });
+await page.getByRole("button", { name: /Confirm/i }).click();
+await page.screenshot({ path: "render_out/03_after_confirm.png", fullPage: true });
 await page.waitForTimeout(800);
 
 // File -> Import from SQL -> PostgreSQL
-await page.getByText("File", { exact: true }).click();
+const fileMenu = page.getByText("File", { exact: true }).first();
+await fileMenu.waitFor({state:"visible", timeout:30000});
+await fileMenu.click();
+await page.screenshot({ path: "render_out/04_file_menu.png", fullPage: true });
 const importItem = page.getByText("Import from SQL", { exact: true });
 await importItem.hover();
 await page.getByText("PostgreSQL", { exact: true }).last().click();
+await page.screenshot({ path: "render_out/05_import_modal.png", fullPage: true });
 
-await page.getByText("Upload file", { exact: true }).click();
+await page.getByText(/Upload file/i).click();
 const input = page.locator('input[type="file"]').last();
 await input.setInputFiles({
   name: "schema_drawdb.sql",
@@ -35,7 +44,9 @@ await page.waitForTimeout(500);
 const overwrite = page.getByLabel("Overwrite existing diagram");
 if (await overwrite.count()) await overwrite.check();
 
-await page.getByRole("button", { name: "Import" }).click();
+await page.getByRole("button", { name: /^Import$/i }).click();
+await page.waitForTimeout(1500);
+await page.screenshot({ path: "render_out/06_after_import.png", fullPage: true });
 await page.waitForTimeout(2500);
 
 // Fail loudly on DrawDB parse errors.
@@ -72,3 +83,12 @@ fs.writeFileSync("render_out/verification.txt",
 if (missing.length) throw new Error("Missing tables after drawDB import: " + missing.join(", "));
 
 await browser.close();
+} catch (e) {
+  try {
+    fs.writeFileSync("render_out/error.txt", String(e?.stack || e));
+    fs.writeFileSync("render_out/error_body.txt", await page.locator("body").innerText());
+    await page.screenshot({ path: "render_out/error.png", fullPage: true });
+  } catch {}
+  await browser.close();
+  throw e;
+}

@@ -84,6 +84,7 @@ jobs:
           node render.mjs
 
       - name: Upload drawDB outputs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: UniAdmSys-drawDB-render

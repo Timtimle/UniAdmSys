@@ -467,7 +467,7 @@ FROM anon, authenticated;
 -- =========================================================
 -- 5) RUN FOR CURRENT 2025 DATA
 -- =========================================================
-SELECT public.recalculate_admission_results(NULL, 2025);
+SELECT public.recalculate_admission_results(NULL::BIGINT, 2025::SMALLINT);
 
 COMMIT;
 

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xét Tuyển & Tra Cứu - UniAdmSys</title>
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admission-tools.css">
+</head>
+<body>
+<header class="admin-navbar">
+    <div class="nav-brand">HỆ THỐNG QUẢN TRỊ TUYỂN SINH</div>
+    <div class="nav-user">
+        <span>Admin: <strong>Nguyễn Văn Nghĩa</strong></span>
+        <a href="login.html" class="btn-logout">Đăng xuất</a>
+    </div>
+</header>
+
+<div class="admin-container">
+    <aside class="admin-sidebar">
+        <ul>
+            <li><a href="index.html">Duyệt hồ sơ</a></li>
+            <li><a href="dashboard.html">Thống kê & Cấu hình</a></li>
+            <li class="active"><a href="admission-tools.html">Xét tuyển & Tra cứu</a></li>
+        </ul>
+    </aside>
+
+    <main class="admin-content">
+        <h2>Xét tuyển & Tra cứu tuyển sinh</h2>
+        <p class="tool-note">Tra cứu ngành, điểm chuẩn, điểm sàn và chạy xếp hạng thí sinh theo chỉ tiêu.</p>
+
+        <div class="tool-tabs">
+            <button class="tool-tab active" data-tab="lookupPane">Tra cứu tuyển sinh</button>
+            <button class="tool-tab" data-tab="quotaPane">Xét theo chỉ tiêu</button>
+        </div>
+
+        <section id="lookupPane" class="tool-pane active">
+            <div class="filter-card">
+                <h3>Tra cứu ngành · điểm chuẩn · điểm sàn</h3>
+                <div class="tool-grid">
+                    <div class="tool-field span-5">
+                        <label>Từ khóa ngành / trường</label>
+                        <input id="lookupQuery" class="form-control" value="Công nghệ thông tin" placeholder="Ví dụ: Công nghệ thông tin">
+                    </div>
+                    <div class="tool-field span-2">
+                        <label>Mã trường</label>
+                        <input id="lookupSchool" class="form-control" placeholder="BKA">
+                    </div>
+                    <div class="tool-field span-3">
+                        <label>Loại điểm chuẩn</label>
+                        <select id="lookupScoreType" class="form-control">
+                            <option value="all">Tất cả</option>
+                            <option value="thi_thpt">Thi THPT</option>
+                            <option value="dgnl">ĐGNL / HSA / TSA</option>
+                        </select>
+                    </div>
+                    <div class="tool-field span-2 tool-check-wrap">
+                        <label>&nbsp;</label>
+                        <label class="tool-check"><input id="lookupDemo" type="checkbox" checked> Hiện DEMO</label>
+                    </div>
+                </div>
+                <div class="tool-actions">
+                    <div class="tool-note">ĐGNL/HSA/TSA luôn hiển thị kèm thang điểm để không nhầm với THPT /30.</div>
+                    <button class="btn-primary" id="lookupBtn">Tra cứu</button>
+                </div>
+                <div id="lookupError" class="tool-error"></div>
+            </div>
+
+            <div class="table-card">
+                <div class="tool-section-title">
+                    <h3>Kết quả tra cứu</h3>
+                    <span id="lookupCount">(0 ngành)</span>
+                </div>
+                <div id="lookupResults"><div class="tool-note">Bấm Tra cứu để lấy dữ liệu.</div></div>
+            </div>
+        </section>
+
+        <section id="quotaPane" class="tool-pane">
+            <div class="filter-card">
+                <h3>Chạy thuật toán xếp hạng theo chỉ tiêu</h3>
+                <div class="tool-grid">
+                    <div class="tool-field span-5">
+                        <label>Ngành đã chọn</label>
+                        <input id="quotaMajorLabel" class="form-control" readonly placeholder="Chọn ngành từ tab Tra cứu">
+                        <input id="quotaMajorId" type="hidden">
+                    </div>
+                    <div class="tool-field span-5">
+                        <label>Phương thức xét tuyển</label>
+                        <select id="quotaMethod" class="form-control"><option value="">Chọn ngành trước...</option></select>
+                    </div>
+                    <div class="tool-field span-2">
+                        <label>Chỉ tiêu override</label>
+                        <input id="quotaOverride" class="form-control" type="number" min="1" placeholder="VD 50">
+                    </div>
+                    <div class="tool-field span-2">
+                        <label>Năm</label>
+                        <input id="quotaYear" class="form-control" type="number" value="2025">
+                    </div>
+                    <div class="tool-field span-5">
+                        <label>Admin token</label>
+                        <input id="adminToken" class="form-control" type="password" placeholder="BACKEND_ADMIN_TOKEN">
+                    </div>
+                    <div class="tool-field span-3 tool-check-wrap">
+                        <label>&nbsp;</label>
+                        <label class="tool-check"><input id="quotaCommit" type="checkbox"> Lưu xếp hạng vào DB</label>
+                    </div>
+                </div>
+                <div class="tool-actions">
+                    <div class="tool-note">Xếp hạng trong 1 ngành + 1 phương thức; trúng tuyển cuối cùng vẫn theo thứ tự nguyện vọng.</div>
+                    <button class="btn-success" id="quotaBtn">Chạy xét theo chỉ tiêu</button>
+                </div>
+                <div id="quotaError" class="tool-error"></div>
+                <div id="quotaSuccess" class="tool-success"></div>
+            </div>
+
+            <div id="quotaStats" class="quota-stats" style="display:none"></div>
+            <div id="quotaWarnings"></div>
+
+            <div class="table-card">
+                <h3>Bảng xếp hạng thí sinh</h3>
+                <div id="quotaTable"><div class="tool-note">Chưa chạy thuật toán.</div></div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="js/admission-tools.js"></script>
+</body>
+</html>

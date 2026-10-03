@@ -44,5 +44,5 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: docs: make database ERD readable
+          commit_message: "docs: make database ERD readable"
           file_pattern: README.md docs/assets/database/parts/*.png

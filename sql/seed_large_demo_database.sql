@@ -566,6 +566,12 @@ WITH schools AS (
     WHERE NULLIF(trim(t.ma_tuyen_sinh), '') IS NOT NULL
     ORDER BY t.ma_tuyen_sinh
     LIMIT 200
+),
+floor_scores AS (
+    SELECT
+        ma_truong,
+        round((15 + ((rn * 7) % 6))::numeric, 2) AS diem_min
+    FROM schools
 )
 INSERT INTO public.nguong_dau_vao (
     ma_truong,
@@ -583,16 +589,12 @@ SELECT
     2025,
     NULL,
     NULL,
-    round((15 + ((s.rn * 7) % 6))::numeric, 2),
-    round((
-        (15 + ((s.rn * 7) % 6))
-        + 1
-        + ((s.rn * 11) % 4)
-    )::numeric, 2),
+    s.diem_min,
+    s.diem_min + 2.00,
     'demo',
     'Synthetic floor-score range for UI/backend testing only',
     'demo://bulk-floor-score'
-FROM schools s
+FROM floor_scores s
 ON CONFLICT DO NOTHING;
 
 

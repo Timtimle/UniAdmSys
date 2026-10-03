@@ -41,8 +41,7 @@ await input.setInputFiles({
 });
 await page.waitForTimeout(500);
 
-const overwrite = page.getByLabel("Overwrite existing diagram");
-if (await overwrite.count()) await overwrite.check();
+// New diagram is empty, so overwrite is unnecessary.
 
 await page.getByRole("button", { name: /^Import$/i }).click();
 await page.waitForTimeout(1500);

@@ -32,7 +32,10 @@ to be added
        width="1100">
 </p>
 
-
 ## Database ERD
 
-[Open the full GitHub Mermaid ERD](docs/database/ERD.md) — 27 tables and their relationships.
+<p align="center">
+  <a href="docs/assets/database/UniAdmSys_ERD.png">
+    <img src="docs/assets/database/UniAdmSys_ERD.png" alt="Database ERD" width="1400">
+  </a>
+</p>

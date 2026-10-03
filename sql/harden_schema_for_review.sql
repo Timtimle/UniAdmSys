@@ -228,35 +228,39 @@ BEGIN
           AND table_name = 'hoc_phi'
           AND column_name = 'diem_san_min'
     ) THEN
-        -- Preserve existing floor-score data before removing the legacy columns.
-        INSERT INTO public.nguong_dau_vao(
-            ma_truong, nam, diem_san_min, diem_san_max,
-            trang_thai, ghi_chu, source_url
-        )
-        SELECT
-            ma_truong,
-            nam,
-            diem_san_min,
-            diem_san_max,
-            COALESCE(diem_san_trang_thai, 'chua_xac_minh'),
-            diem_san_ghi_chu,
-            diem_san_source_url
-        FROM public.hoc_phi
-        WHERE diem_san_min IS NOT NULL
-           OR diem_san_max IS NOT NULL
-           OR diem_san_ghi_chu IS NOT NULL
-           OR diem_san_source_url IS NOT NULL;
+        -- Use dynamic SQL because these legacy columns may already be gone.
+        EXECUTE $sql$
+            INSERT INTO public.nguong_dau_vao(
+                ma_truong, nam, diem_san_min, diem_san_max,
+                trang_thai, ghi_chu, source_url
+            )
+            SELECT
+                ma_truong,
+                nam,
+                diem_san_min,
+                diem_san_max,
+                COALESCE(diem_san_trang_thai, 'chua_xac_minh'),
+                diem_san_ghi_chu,
+                diem_san_source_url
+            FROM public.hoc_phi
+            WHERE diem_san_min IS NOT NULL
+               OR diem_san_max IS NOT NULL
+               OR diem_san_ghi_chu IS NOT NULL
+               OR diem_san_source_url IS NOT NULL
+        $sql$;
 
         -- Views depend on the old columns, so remove them before dropping columns.
         DROP VIEW IF EXISTS public.v_catalog_tuyen_sinh_2025;
         DROP VIEW IF EXISTS public.v_truong_tuyen_sinh_2025;
 
-        ALTER TABLE public.hoc_phi
-            DROP COLUMN IF EXISTS diem_san_min,
-            DROP COLUMN IF EXISTS diem_san_max,
-            DROP COLUMN IF EXISTS diem_san_trang_thai,
-            DROP COLUMN IF EXISTS diem_san_ghi_chu,
-            DROP COLUMN IF EXISTS diem_san_source_url;
+        EXECUTE $sql$
+            ALTER TABLE public.hoc_phi
+                DROP COLUMN IF EXISTS diem_san_min,
+                DROP COLUMN IF EXISTS diem_san_max,
+                DROP COLUMN IF EXISTS diem_san_trang_thai,
+                DROP COLUMN IF EXISTS diem_san_ghi_chu,
+                DROP COLUMN IF EXISTS diem_san_source_url
+        $sql$;
     END IF;
 END $$;
 

@@ -77,6 +77,30 @@ await canvas.waitFor({ state: "visible", timeout: 30000 });
 await canvas.screenshot({ path: "render_out/uniadmsys_drawdb_canvas.png" });
 await page.screenshot({ path: "render_out/uniadmsys_drawdb_full_ui.png", fullPage: true });
 
+// Export an actual scalable SVG using drawDB's own File -> Export as -> SVG action.
+await page.getByText("File", { exact: true }).first().click();
+const exportAs = page.getByText("Export as", { exact: true }).last();
+await exportAs.waitFor({ state: "visible", timeout: 30000 });
+await exportAs.hover();
+const svgItem = page.getByText("SVG", { exact: true }).last();
+await svgItem.waitFor({ state: "visible", timeout: 30000 });
+await svgItem.click();
+const exportImg = page.locator(".semi-modal img").last();
+await exportImg.waitFor({ state: "visible", timeout: 30000 });
+await page.waitForFunction(() => {
+  const imgs = [...document.querySelectorAll(".semi-modal img")];
+  const src = imgs.at(-1)?.getAttribute("src") || "";
+  return src.startsWith("data:image/svg+xml");
+}, null, { timeout: 30000 });
+const svgDataUrl = await exportImg.getAttribute("src");
+let svgText = "";
+if (svgDataUrl.includes(";base64,")) {
+  svgText = Buffer.from(svgDataUrl.split(";base64,")[1], "base64").toString("utf8");
+} else {
+  svgText = decodeURIComponent(svgDataUrl.split(",", 2)[1]);
+}
+fs.writeFileSync("render_out/UniAdmSys_ERD.svg", svgText);
+
 // Extract native SVG/HTML snapshot of DrawDB canvas if present.
 const html = await canvas.evaluate(el => el.outerHTML);
 fs.writeFileSync("render_out/drawdb_canvas.html", html);

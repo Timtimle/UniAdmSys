@@ -86,7 +86,7 @@ ALTER TABLE public.ho_so_xet_tuyen
 -- =========================================================
 CREATE OR REPLACE FUNCTION public.recalculate_admission_results(
     p_ma_thi_sinh BIGINT DEFAULT NULL,
-    p_nam SMALLINT DEFAULT 2025
+    p_nam INTEGER DEFAULT 2025
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -467,7 +467,7 @@ FROM anon, authenticated;
 -- =========================================================
 -- 5) RUN FOR CURRENT 2025 DATA
 -- =========================================================
-SELECT public.recalculate_admission_results(NULL::BIGINT, 2025::SMALLINT);
+SELECT public.recalculate_admission_results(NULL::BIGINT, 2025);
 
 COMMIT;
 

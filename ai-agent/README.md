@@ -1,4 +1,4 @@
-# UniAdmSys AI Agent — Supabase version
+# Agent
 
 FastAPI + OpenAI Responses API + tool calling + Supabase.
 

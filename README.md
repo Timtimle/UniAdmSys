@@ -35,10 +35,4 @@ to be added
 
 ## Database ERD
 
-<p align="center">
-  <a href="docs/assets/database/UniAdmSys_ERD.png">
-    <img src="docs/assets/database/UniAdmSys_ERD.png" alt="Database ERD" width="1100">
-  </a>
-</p>
-
-> Click the diagram to open full size and zoom.
+[Open the full GitHub Mermaid ERD](docs/database/ERD.md) — 27 tables and their relationships.

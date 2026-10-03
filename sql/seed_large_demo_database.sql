@@ -584,7 +584,11 @@ SELECT
     NULL,
     NULL,
     round((15 + ((s.rn * 7) % 6))::numeric, 2),
-    round((18 + ((s.rn * 11) % 8))::numeric, 2),
+    round((
+        (15 + ((s.rn * 7) % 6))
+        + 1
+        + ((s.rn * 11) % 4)
+    )::numeric, 2),
     'demo',
     'Synthetic floor-score range for UI/backend testing only',
     'demo://bulk-floor-score'

@@ -1,0 +1,48 @@
+name: Split ERD for README
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/crop-erd.yml"
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Split ERD
+        run: |
+          mkdir -p docs/assets/database/parts
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1300+2050+0 +repage docs/assets/database/parts/erd_01.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1300+2850+0 +repage docs/assets/database/parts/erd_02.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1300+2050+1150 +repage docs/assets/database/parts/erd_03.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1300+2850+1150 +repage docs/assets/database/parts/erd_04.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1300+2050+2300 +repage docs/assets/database/parts/erd_05.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1300+2850+2300 +repage docs/assets/database/parts/erd_06.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1300+2050+3450 +repage docs/assets/database/parts/erd_07.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1300+2850+3450 +repage docs/assets/database/parts/erd_08.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1323+2050+4600 +repage docs/assets/database/parts/erd_09.png
+          convert docs/assets/database/UniAdmSys_ERD.png -crop 900x1323+2850+4600 +repage docs/assets/database/parts/erd_10.png
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("README.md")
+          s = p.read_text(encoding="utf-8")
+          marker = "## Database ERD"
+          prefix = s.split(marker,1)[0].rstrip() if marker in s else s.rstrip()
+          imgs = "\n\n".join(
+              f'<p align="center"><img src="docs/assets/database/parts/erd_{i:02d}.png" alt="Database ERD {i}"></p>'
+              for i in range(1,11)
+          )
+          p.write_text(prefix + "\n\n## Database ERD\n\n" + imgs + "\n", encoding="utf-8")
+          PY
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: docs: make database ERD readable
+          file_pattern: README.md docs/assets/database/parts/*.png
